@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestServiceHost.Events;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ namespace RestServiceHost
                 System.Threading.Thread.Sleep(1000);
         }
 
-        static void host_OnLogEntry(object sender, ServiceHost.LogEventArgs e)
+        static void host_OnLogEntry(object sender, LogEventArgs e)
         {
             ConsoleColor color;
             switch(e.EntryType)

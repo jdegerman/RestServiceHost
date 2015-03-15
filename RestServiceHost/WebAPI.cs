@@ -37,11 +37,13 @@ namespace RestServiceHost
         }
         public void Start()
         {
+            Info("[{0}] Starting service", Name);
             listener.Start();
             ThreadPool.QueueUserWorkItem(ListenAsync);
         }
         public void Stop()
         {
+            Info("[{0}] Stopping service", Name);
             listener.Stop();
         }
         public void RegisterController(string name, object controller)
@@ -68,9 +70,9 @@ namespace RestServiceHost
 
         private async void HandleRequest(HttpListenerContext context)
         {
-            Info("[{0}] Received request", Name);
             var request = context.Request;
             var response = context.Response;
+            Info("[{0}] Received request: {1}", Name, request.Url);
             var route = ExtractRoutingInformation(request);
             Task temp = null;
             response.ContentType = "application/json";

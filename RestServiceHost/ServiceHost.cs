@@ -29,9 +29,11 @@ namespace RestServiceHost
             {
                 Info("Creating service '{0}'", service.Name);
                 var webService = new WebAPI(service.Name, service.Urls.ToArray());
+                webService.OnLogEntry += webService_OnLogEntry;
                 RegisterControllers(service, webService);
             }
         }
+
         private void RegisterControllers(Service service, WebAPI webService)
         {
             foreach (var controller in service.Controllers)
@@ -41,6 +43,7 @@ namespace RestServiceHost
                 var assembly = assemblies[controller.Name];
                 var controllerInstance = assembly.CreateInstance(controller.FullyQualifiedName);
                 webService.RegisterController(controller.Name, controllerInstance);
+                services.Add(webService);
             }
         }
         private void LoadAssemblies(ServiceConfig configuration)
@@ -92,6 +95,13 @@ namespace RestServiceHost
         private void Error(string message, params object[] args)
         {
             Log(EventLogEntryType.Error, message, args);
+        }
+        void webService_OnLogEntry(object sender, LogEventArgs e)
+        {
+            var handler = OnLogEntry;
+            if (handler == null)
+                return;
+            handler(sender, e); // Forward log events to subscriber
         }
         private void Log(EventLogEntryType type, string message, params object[] args)
         {
