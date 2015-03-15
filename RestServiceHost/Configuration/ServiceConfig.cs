@@ -42,14 +42,21 @@ namespace RestServiceHost.Configuration
         [XmlAttribute("Name")]
         public string Name { get; set; }
 
-        [XmlAttribute("Assembly")]
-        public string Assembly { get; set; }
-
-        [XmlAttribute("FullyQualifiedName")]
-        public string FullyQualifiedName { get; set; }
+        [XmlArray("Controllers")]
+        [XmlArrayItem("Controller")]
+        public List<Controller> Controllers { get; set; }
 
         [XmlArray("Urls")]
         [XmlArrayItem("Url")]
         public List<string> Urls { get; set; }
+    }
+
+    public class Controller
+    {
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
+        [XmlAttribute("FullyQualifiedName")]
+        public string FullyQualifiedName { get; set; }
     }
 }

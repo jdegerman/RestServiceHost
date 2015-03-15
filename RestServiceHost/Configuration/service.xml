@@ -4,7 +4,10 @@
     <Assembly Name="TestService" Path="TestService.dll" />
   </Assemblies>
   <Services>
-    <Service Name="TestService" Assembly="TestService" FullyQualifiedName="TestService.ServiceClass">
+    <Service Name="TestService1" >
+      <Controllers>
+        <Controller Name="TestService" FullyQualifiedName="TestService.ServiceClass" />
+      </Controllers>
       <Urls>
         <Url>http://localhost:8080/</Url>
       </Urls>

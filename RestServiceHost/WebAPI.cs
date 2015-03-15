@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestServiceHost.Configuration;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,9 +19,11 @@ namespace RestServiceHost
         private Dictionary<string, object> controllers = new Dictionary<string, object>();
 
         public bool IsListening { get { return listener.IsListening; } }
+        public string Name { get; private set; }
 
-        public WebAPI(params string[] urls)
+        public WebAPI(string name, params string[] urls)
         {
+            Name = name;
             listener = new HttpListener();
             foreach (var url in urls)
             {
