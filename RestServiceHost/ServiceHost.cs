@@ -1,4 +1,5 @@
 ﻿using RestServiceHost.Configuration;
+using RestServiceHost.Events;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -100,16 +101,6 @@ namespace RestServiceHost
             if (handler == null)
                 return;
             handler(this, new LogEventArgs(type, message, args));
-        }
-        public class LogEventArgs
-        {
-            public EventLogEntryType EntryType { get; set; }
-            public string Message { get; set; }
-            public LogEventArgs(EventLogEntryType entryType, string message, params object[] args)
-            {
-                EntryType = entryType;
-                Message = string.Format(message, args);
-            }
         }
     }
 }
