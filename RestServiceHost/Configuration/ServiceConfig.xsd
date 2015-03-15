@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="ServiceConfig"
+    targetNamespace="http://www.voxsola.se/ServiceHost/ServiceConfig.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://www.voxsola.se/ServiceHost/ServiceConfig.xsd"
+    xmlns:mstns="http://www.voxsola.se/ServiceHost/ServiceConfig.xsd"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+  <xs:element name="Configuration" type="ConfigurationType" />
+  
+  <xs:complexType name="ConfigurationType">
+    <xs:sequence>
+      <xs:element name="Assemblies" type="AssembliesType" />
+      <xs:element name="Services" type="ServicesType" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="AssembliesType">
+    <xs:sequence>
+      <xs:element name="Assembly" type="AssemblyType" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="AssemblyType">
+    <xs:attribute name="Name" use="required" />
+    <xs:attribute name="Path" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ServicesType">
+    <xs:sequence>
+      <xs:element name="Service" type="ServiceType" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="ServiceType">
+    <xs:sequence>
+      <xs:element name="Controllers" type="ControllersType" />
+      <xs:element name="Urls" type="UrlsType" />
+    </xs:sequence>
+    <xs:attribute name="Name" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="ControllersType">
+    <xs:sequence>
+      <xs:element name="Controller" type="ControllerType" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  
+  <xs:complexType name="ControllerType">
+    <xs:attribute name="Assembly" use="required" />
+    <xs:attribute name="FullyQualifiedName" use="required" />
+  </xs:complexType>
+
+  <xs:complexType name="UrlsType">
+    <xs:sequence>
+      <xs:element name="Url" type="xs:anyURI" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

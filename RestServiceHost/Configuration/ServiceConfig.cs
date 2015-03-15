@@ -53,8 +53,8 @@ namespace RestServiceHost.Configuration
 
     public class Controller
     {
-        [XmlAttribute("Name")]
-        public string Name { get; set; }
+        [XmlAttribute("Assembly")]
+        public string Assembly { get; set; }
 
         [XmlAttribute("FullyQualifiedName")]
         public string FullyQualifiedName { get; set; }

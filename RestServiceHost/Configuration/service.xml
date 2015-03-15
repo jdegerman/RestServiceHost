@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<Configuration>
+<Configuration xmlns="http://www.voxsola.se/ServiceHost/ServiceConfig.xsd">
   <Assemblies>
     <Assembly Name="TestService" Path="TestService.dll" />
   </Assemblies>
   <Services>
-    <Service Name="TestService1" >
+    <Service Name="TestService1">
       <Controllers>
-        <Controller Name="TestService" FullyQualifiedName="TestService.ServiceClass" />
+        <Controller Assembly="TestService" FullyQualifiedName="TestService.ServiceClass" />
       </Controllers>
       <Urls>
         <Url>http://localhost:8080/</Url>

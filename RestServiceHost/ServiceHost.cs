@@ -38,11 +38,11 @@ namespace RestServiceHost
         {
             foreach (var controller in service.Controllers)
             {
-                Info("Registering controller '{0}'", controller.Name);
-                ThrowIf(!assemblies.ContainsKey(controller.Name), "Controller '{0}' not defined", controller.Name);
-                var assembly = assemblies[controller.Name];
+                Info("Registering controller '{0}'", controller.Assembly);
+                ThrowIf(!assemblies.ContainsKey(controller.Assembly), "Controller '{0}' not defined", controller.Assembly);
+                var assembly = assemblies[controller.Assembly];
                 var controllerInstance = assembly.CreateInstance(controller.FullyQualifiedName);
-                webService.RegisterController(controller.Name, controllerInstance);
+                webService.RegisterController(controller.Assembly, controllerInstance);
                 services.Add(webService);
             }
         }
