@@ -98,7 +98,7 @@ namespace RestServiceHost
             }
             catch (Exception ex)
             {
-                temp = HandleError(response, "An error occurred: " + ex.Message);
+                temp = HandleError(response, "An error occurred: " + ex.Message); // Because we can't await in a catch
             }
             if (temp != null)
                 await temp;
@@ -202,7 +202,21 @@ namespace RestServiceHost
                 return type.IsValueType ? Activator.CreateInstance(type) : null;
             }
             // Seriously, fuck GUIDs
-            if (type == typeof(Guid))
+            if (type.IsArray)
+            {
+                var arrayType = type.GetElementType();
+                var listBaseType = typeof(List<>);
+                var listType = listBaseType.MakeGenericType(arrayType);
+                var list = Activator.CreateInstance(listType);
+                foreach(var item in value.Split(','))
+                {
+                    var add = list.GetMethodByName("Add");
+                    add.Invoke(list, new object[1] { ConvertFromString(item, arrayType) });
+                }
+                var toArray = list.GetMethodByName("ToArray");
+                return toArray.Invoke(list, null);
+            }
+            else if (type == typeof(Guid))
             {
                 return Guid.Parse(value);
             }

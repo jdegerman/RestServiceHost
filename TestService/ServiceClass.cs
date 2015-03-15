@@ -12,5 +12,9 @@ namespace TestService
         {
             return Enumerable.Range(1, count).ToList();
         }
+        public List<int> EchoList(int[] nums)
+        {
+            return nums.ToList();
+        }
     }
 }
