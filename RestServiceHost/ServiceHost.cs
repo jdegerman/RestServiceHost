@@ -17,8 +17,10 @@ namespace RestServiceHost
         public delegate void OnLogHandler(object sender, LogEventArgs e);
         public event OnLogHandler OnLogEntry;
 
-        public ServiceHost(ServiceConfig configuration)
+        public ServiceHost(ServiceConfig configuration, OnLogHandler onLogCallback = null)
         {
+            if (onLogCallback != null)
+                OnLogEntry += onLogCallback;
             LoadAssemblies(configuration);
             CreateServices(configuration);
         }

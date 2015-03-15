@@ -11,10 +11,29 @@ namespace RestServiceHost
         static void Main(string[] args)
         {
             var config = RestServiceHost.Configuration.ServiceConfig.Load("Configuration\\service.xml");
-            var api = new WebAPI("http://localhost:8080/");
-            api.Start();
+            var host = new ServiceHost(config, host_OnLogEntry);
+            host.Start();
             while (true)
                 System.Threading.Thread.Sleep(1000);
+        }
+
+        static void host_OnLogEntry(object sender, ServiceHost.LogEventArgs e)
+        {
+            ConsoleColor color;
+            switch(e.EntryType)
+            {
+                case System.Diagnostics.EventLogEntryType.Error:
+                    color = ConsoleColor.Red;
+                    break;
+                case System.Diagnostics.EventLogEntryType.Warning:
+                    color = ConsoleColor.Yellow;
+                    break;
+                default:
+                    color = ConsoleColor.White;
+                    break;
+            }
+            Console.ForegroundColor = color;
+            Console.WriteLine(e.Message);
         }
     }
 }
