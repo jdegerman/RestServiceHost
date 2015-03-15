@@ -1,15 +1,14 @@
-﻿using RestServiceHost.Configuration;
+﻿using RestServiceHost.Events;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Helpers;
-using System.Xml.Serialization;
 
 namespace RestServiceHost
 {
@@ -20,6 +19,8 @@ namespace RestServiceHost
 
         public bool IsListening { get { return listener.IsListening; } }
         public string Name { get; private set; }
+        public delegate void OnLogHandler(object sender, LogEventArgs e);
+        public event OnLogHandler OnLogEntry;
 
         public WebAPI(string name, params string[] urls)
         {
@@ -67,6 +68,7 @@ namespace RestServiceHost
 
         private async void HandleRequest(HttpListenerContext context)
         {
+            Info("[{0}] Received request", Name);
             var request = context.Request;
             var response = context.Response;
             var route = ExtractRoutingInformation(request);
@@ -75,6 +77,7 @@ namespace RestServiceHost
             response.StatusCode = 200;
             if (!controllers.ContainsKey(route.Controller))
             {
+                Warn("[{0}] Controller '{1}' does not exist", Name, route.Controller);
                 await HandleError(response, "Controller '{0}' does not exist", route.Controller);
                 goto Exit;
             }
@@ -82,6 +85,7 @@ namespace RestServiceHost
             var method = controller.GetMethodByName(route.Method);
             if (method == null)
             {
+                Warn("[{0}] Controller '{1}' does not support method '{2}'", Name, route.Controller, route.Method);
                 await HandleError(response, "Controller '{0}' does not support method '{1}'", route.Controller, route.Method);
                 goto Exit;
             }
@@ -189,7 +193,7 @@ namespace RestServiceHost
             if (cond)
                 throw new Exception(string.Format(text, args));
         }
-        public static object ConvertFromString(string value, Type type)
+        private static object ConvertFromString(string value, Type type)
         {
             if (value == null)
             {
@@ -208,6 +212,25 @@ namespace RestServiceHost
             {
                 return Convert.ChangeType(value, type);
             }
+        }
+        private void Info(string message, params object[] args)
+        {
+            Log(EventLogEntryType.Information, message, args);
+        }
+        private void Warn(string message, params object[] args)
+        {
+            Log(EventLogEntryType.Warning, message, args);
+        }
+        private void Error(string message, params object[] args)
+        {
+            Log(EventLogEntryType.Error, message, args);
+        }
+        private void Log(EventLogEntryType type, string message, params object[] args)
+        {
+            var handler = OnLogEntry;
+            if (handler == null)
+                return;
+            handler(this, new LogEventArgs(type, message, args));
         }
         private class Routing
         {
