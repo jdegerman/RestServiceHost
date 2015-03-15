@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Configuration>
+  <Assemblies>
+    <Assembly Name="TestService" Path="TestService.dll" />
+  </Assemblies>
+  <Services>
+    <Service Name="TestService" Assembly="TestService" FullyQualifiedName="TestService.ServiceClass">
+      <Urls>
+        <Url>http://localhost:8080/</Url>
+      </Urls>
+    </Service>
+  </Services>
+</Configuration>
