@@ -52,7 +52,11 @@ namespace RestServiceHost
                         continue;
                     if (typeof(object).GetMethods().Any(objectMethod => objectMethod.Name == method.Name))
                         continue;
-                    Info("  * Found method " + method.Name);
+                    Info("  * Found method '{0}' with return type {1}", method.Name, method.ReturnParameter.ToString());
+                    foreach(var param in method.GetParameters())
+                    {
+                        Info("   * Parameter '{0}' with type {1}", param.Name, param.ParameterType.Name);
+                    }
                 }
                 webService.RegisterController(controller.Assembly, controllerInstance);
                 services.Add(webService);
