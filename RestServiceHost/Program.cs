@@ -14,8 +14,9 @@ namespace RestServiceHost
             var config = RestServiceHost.Configuration.ServiceConfig.Load("Configuration\\service.xml");
             var host = new ServiceHost(config, host_OnLogEntry);
             host.Start();
-            while (true)
-                System.Threading.Thread.Sleep(1000);
+            Console.WriteLine("Press any key to shut down service...");
+            Console.Read();
+            host.Stop();
         }
 
         static void host_OnLogEntry(object sender, LogEventArgs e)

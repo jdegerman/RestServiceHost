@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 
 namespace RestServiceHost.Configuration
 {
-    [XmlRoot("Configuration")]
+    [XmlRoot("Configuration", Namespace = "http://www.voxsola.se/ServiceHost/ServiceConfig.xsd")]
     public class ServiceConfig
     {
         [XmlArray("Assemblies")]
@@ -50,7 +50,6 @@ namespace RestServiceHost.Configuration
         [XmlArrayItem("Url")]
         public List<string> Urls { get; set; }
     }
-
     public class Controller
     {
         [XmlAttribute("Assembly")]

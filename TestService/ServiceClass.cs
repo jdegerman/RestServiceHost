@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RestServiceHost;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TestService
 {
-    public class ServiceClass
+    public class ServiceClass : RestServiceBase
     {
         public List<int> GetList(int count)
         {

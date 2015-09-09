@@ -15,7 +15,7 @@ namespace RestServiceHost
     public class WebAPI
     {
         private HttpListener listener;
-        private Dictionary<string, object> controllers = new Dictionary<string, object>();
+        private Dictionary<string, RestServiceBase> controllers = new Dictionary<string, RestServiceBase>();
 
         public bool IsListening { get { return listener.IsListening; } }
         public string Name { get; private set; }
@@ -46,7 +46,7 @@ namespace RestServiceHost
             Info("[{0}] Stopping service", Name);
             listener.Stop();
         }
-        public void RegisterController(string name, object controller)
+        public void RegisterController(string name, RestServiceBase controller)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = "Default";
@@ -66,14 +66,16 @@ namespace RestServiceHost
                 var context = await listener.GetContextAsync();
                 await Task.Factory.StartNew(() => HandleRequest(context));
             }
+            Info("[{0}] Service has stopped listening", Name);
         }
 
         private async void HandleRequest(HttpListenerContext context)
         {
             var request = context.Request;
             var response = context.Response;
-            Info("[{0}] Received request: {1}", Name, request.Url);
             var route = ExtractRoutingInformation(request);
+            if (route.Controller == "Default" && route.Method == "favicon.ico")
+                goto Exit;
             Task temp = null;
             response.ContentType = "application/json";
             response.StatusCode = 200;
@@ -84,6 +86,8 @@ namespace RestServiceHost
                 goto Exit;
             }
             var controller = controllers[route.Controller];
+            controller.Request = request;
+            controller.Response = response;
             var method = controller.GetMethodByName(route.Method);
             if (method == null)
             {
@@ -141,9 +145,19 @@ namespace RestServiceHost
 
         private async Task SendResponse(HttpListenerResponse response, bool success, object responseData)
         {
-            var responseObject = new { success, responseData };
-            var errorMessage = Encoding.Default.GetBytes(Serialize(responseObject));
-            await response.OutputStream.WriteAsync(errorMessage, 0, errorMessage.Length);
+            try
+            {
+                if (response.OutputStream.CanWrite)
+                {
+                    var responseObject = new { success, responseData };
+                    var errorMessage = Encoding.Default.GetBytes(Serialize(responseObject));
+                    await response.OutputStream.WriteAsync(errorMessage, 0, errorMessage.Length);
+                }
+            }
+            catch(Exception ex)
+            {
+                Warn("[{0}] Unable to send response to client: ", Name, ex.Message);
+            }
         }
 
         private string Serialize(object responseObject)
@@ -165,6 +179,8 @@ namespace RestServiceHost
                 r.Controller = requestUrlParts[0];
                 r.Method = requestUrlParts[1];
             }
+            if (r.Method != "favicon.ico")
+                Info("[{0}] Invoking method '{1}'", Name, r.Method);
             return r;
         }
         private static Dictionary<string, string> ExtractParameters(HttpListenerRequest request)
@@ -201,7 +217,6 @@ namespace RestServiceHost
             {
                 return type.IsValueType ? Activator.CreateInstance(type) : null;
             }
-            // Seriously, fuck GUIDs
             if (type.IsArray)
             {
                 var arrayType = type.GetElementType();
@@ -229,6 +244,7 @@ namespace RestServiceHost
                 return Convert.ChangeType(value, type);
             }
         }
+        #region - Logging -
         private void Info(string message, params object[] args)
         {
             Log(EventLogEntryType.Information, message, args);
@@ -248,6 +264,7 @@ namespace RestServiceHost
                 return;
             handler(this, new LogEventArgs(type, message, args));
         }
+        #endregion
         private class Routing
         {
             public string Controller { get; set; }
